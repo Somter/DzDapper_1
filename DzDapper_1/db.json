@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=LAPTOP-PL7SGEB9\\SQLEXPRESS;Initial Catalog=MailingList;Integrated Security=SSPI;TrustServerCertificate=True;"
+  }
+}
