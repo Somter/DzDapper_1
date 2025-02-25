@@ -312,7 +312,7 @@ namespace DzDapper_1
             if (!isConnected)
             {
                 Console.WriteLine("Для отображения акций необходимо подключиться к базе данных!");
-                Console.ReadLine();
+                Console.ReadLine(); 
                 return;
             }
 
