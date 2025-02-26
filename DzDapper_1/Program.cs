@@ -34,6 +34,24 @@ namespace DzDapper_1
                     Console.WriteLine("8. Отображение покупателей по городу");
                     Console.WriteLine("9. Отображение покупателей по стране");
                     Console.WriteLine("10. Отображение акций по стране");
+                    Console.WriteLine("11. Вставка информации о новых покупателях;");
+                    Console.WriteLine("12. Вставка новых стран");
+                    Console.WriteLine("13. Вставка новых городов");
+                    Console.WriteLine("14. Вставка информации о новых разделах");
+                    Console.WriteLine("15. Вставка информации о новых акционных товарах");
+                    Console.WriteLine("16. Обновление информации о покупателях");
+                    Console.WriteLine("17. Обновление информации о странах");
+                    Console.WriteLine("18. Обновление информации о городах");
+                    Console.WriteLine("19. Обновление информации о разделах");
+                    Console.WriteLine("21. Удаление покупателя");
+                    Console.WriteLine("22. Удаление страны");
+                    Console.WriteLine("23. Удаление города");
+                    Console.WriteLine("24. Удаление раздела");
+                    Console.WriteLine("25. Удаление акции");
+                    Console.WriteLine("26. Отображение списка городов конкретной страны");
+                    Console.WriteLine("27. Отображение списка разделов конкретного покупателя");
+                    Console.WriteLine("28. Отображение списка акционных товаров конкретного раздела");
+
                     Console.WriteLine("0. Выход");
                     Console.Write("\nВыберите действие: ");
                     int result = int.Parse(Console.ReadLine()!);
@@ -70,6 +88,60 @@ namespace DzDapper_1
                         case 10:
                             ShowPromotionsByCountry();
                             break;
+                        case 11:
+                            AddNewCustomer();  
+                            break;
+                        case 12:
+                            AddCountry();
+                            break;
+                        case 13:
+                            AddCity();
+                            break;
+                        case 14:
+                            AddCategory();
+                            break;
+                        case 15:
+                            AddPromotion();
+                            break;
+                        case 16:
+                            UpdateCustomer();
+                            break;
+                        case 17:
+                            UpdateCountry();
+                            break;
+                        case 18:
+                            UpdateCity();
+                            break;
+                        case 19:
+                            UpdateCategory();
+                            break;
+                        case 20:
+                            UpdatePromotion();
+                            break;
+                        case 21:
+                            DeleteCustomer();
+                            break;
+                        case 22:
+                            DeleteCountry();
+                            break;
+                        case 23:
+                            DeleteCity();
+                            break;
+                        case 24:
+                            DeleteCategory();
+                            break;
+                        case 25:
+                            DeletePromotion();
+                            break;
+                        case 26: 
+                            ShowCitiesByCountry();
+                            break;
+                        case 27: 
+                            ShowCategoriesByCustomer();
+                            break;
+                        case 28:
+                            ShowPromotionsByCategory();
+                            break;
                         case 0:
                             Exit();
                             return;
@@ -104,6 +176,89 @@ namespace DzDapper_1
             }
             Console.ReadLine();
         }
+
+        static void AddNewCustomer()
+        {
+            Console.Clear();
+            Console.Write("Введите имя: ");
+            string firstName = Console.ReadLine()!;
+            Console.Write("Введите фамилию: ");
+            string lastName = Console.ReadLine()!;
+            Console.Write("Введите дату рождения (гггг-мм-дд): ");
+            DateTime birthDate = DateTime.Parse(Console.ReadLine()!);
+            Console.Write("Введите пол (М/Ж): ");
+            string gender = Console.ReadLine()!;
+            Console.Write("Введите Email: ");
+            string email = Console.ReadLine()!;
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "INSERT INTO Customers (FirstName, LastName, BirthDate, Gender, Email) VALUES (@FirstName, @LastName, @BirthDate, @Gender, @Email)";
+                db.Execute(sqlQuery, new { FirstName = firstName, LastName = lastName, BirthDate = birthDate, Gender = gender, Email = email });
+                Console.WriteLine("Покупатель добавлен.");
+            }
+            Console.ReadKey();
+        }
+
+        static void AddCountry()
+        {
+            Console.Write("Введите название страны: ");
+            string countryName = Console.ReadLine()!;
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Execute("INSERT INTO Countries (CountryName) VALUES (@CountryName)", new { CountryName = countryName });
+                Console.WriteLine("Страна добавлена.");
+            }
+            Console.ReadLine();
+        }
+
+        static void AddCity()
+        {
+            Console.Write("Введите название города: ");
+            string cityName = Console.ReadLine()!;
+            Console.Write("Введите ID страны: ");
+            int countryId = int.Parse(Console.ReadLine()!);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Execute("INSERT INTO Cities (CityName, CountryID) VALUES (@CityName, @CountryID)", new { CityName = cityName, CountryID = countryId });
+                Console.WriteLine("Город добавлен.");
+            }
+            Console.ReadLine();
+        }
+
+        static void AddCategory()
+        {
+            Console.Write("Введите название раздела: ");
+            string categoryName = Console.ReadLine()!;
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Execute("INSERT INTO Categories (CategoryName) VALUES (@CategoryName)", new { CategoryName = categoryName });
+                Console.WriteLine("Раздел добавлен.");
+            }
+            Console.ReadLine();
+        }
+
+        static void AddPromotion()
+        {
+            Console.Write("Введите ID категории: ");
+            int categoryId = int.Parse(Console.ReadLine()!);
+            Console.Write("Введите ID страны: ");
+            int countryId = int.Parse(Console.ReadLine()!);
+            Console.Write("Введите дату начала (гггг-мм-дд): ");
+            DateTime startDate = DateTime.Parse(Console.ReadLine()!);
+            Console.Write("Введите дату окончания (гггг-мм-дд): ");
+            DateTime endDate = DateTime.Parse(Console.ReadLine()!);
+            Console.Write("Введите описание: ");
+            string description = Console.ReadLine()!;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Execute("INSERT INTO Promotions (CategoryID, CountryID, StartDate, EndDate, Description) VALUES (@CategoryID, @CountryID, @StartDate, @EndDate, @Description)",
+                    new { CategoryID = categoryId, CountryID = countryId, StartDate = startDate, EndDate = endDate, Description = description });
+                Console.WriteLine("Акция добавлена.");
+            }
+            Console.ReadLine();
+        }
+
 
         static void Exit()
         {
@@ -335,6 +490,264 @@ namespace DzDapper_1
                 }
             }
             Console.ReadLine();
+        }
+
+        static void UpdateCustomer()
+        {
+            Console.Write("Введите ID покупателя: ");
+            int id = int.Parse(Console.ReadLine()!);
+            Console.Write("Введите новое имя: ");
+            string firstName = Console.ReadLine()!;
+            Console.Write("Введите новую фамилию: ");
+            string lastName = Console.ReadLine()!;
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "UPDATE Customers SET FirstName = @FirstName, LastName = @LastName WHERE CustomerID = @ID";
+                db.Execute(sqlQuery, new { ID = id, FirstName = firstName, LastName = lastName });
+                Console.WriteLine("Данные покупателя обновлены.");
+            }
+            Console.ReadKey();
+        }
+
+        static void UpdateCountry()
+        {
+            Console.Write("Введите ID страны: ");
+            int id = int.Parse(Console.ReadLine()!);
+            Console.Write("Введите новое название страны: ");
+            string countryName = Console.ReadLine()!;
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "UPDATE Countries SET CountryName = @CountryName WHERE CountryID = @ID";
+                db.Execute(sqlQuery, new { ID = id, CountryName = countryName });
+                Console.WriteLine("Данные страны обновлены.");
+            }
+            Console.ReadKey();
+        }
+
+        static void UpdateCity()
+        {
+            Console.Write("Введите ID города: ");
+            int id = int.Parse(Console.ReadLine()!);
+            Console.Write("Введите новое название города: ");
+            string cityName = Console.ReadLine()!;
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "UPDATE Cities SET CityName = @CityName WHERE CityID = @ID";
+                db.Execute(sqlQuery, new { ID = id, CityName = cityName });
+                Console.WriteLine("Данные города обновлены.");
+            }
+            Console.ReadKey();
+        }
+
+        static void UpdateCategory()
+        {
+            Console.Write("Введите ID раздела: ");
+            int id = int.Parse(Console.ReadLine()!);
+            Console.Write("Введите новое название раздела: ");
+            string categoryName = Console.ReadLine()!;
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "UPDATE Categories SET CategoryName = @CategoryName WHERE CategoryID = @ID";
+                db.Execute(sqlQuery, new { ID = id, CategoryName = categoryName });
+                Console.WriteLine("Данные раздела обновлены.");
+            }
+            Console.ReadKey();
+        }
+
+        static void UpdatePromotion()
+        {
+            Console.Write("Введите ID акции: ");
+            int id = int.Parse(Console.ReadLine()!);
+            Console.Write("Введите новое описание акции: ");
+            string description = Console.ReadLine()!;
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "UPDATE Promotions SET Description = @Description WHERE PromotionID = @ID";
+                db.Execute(sqlQuery, new { ID = id, Description = description });
+                Console.WriteLine("Данные акции обновлены.");
+            }
+            Console.ReadKey();
+        }
+
+        static void DeleteCustomer()
+        {
+            Console.Write("Введите ID покупателя для удаления: ");
+            int id = int.Parse(Console.ReadLine()!);
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "DELETE FROM Customers WHERE CustomerID = @ID";
+                db.Execute(sqlQuery, new { ID = id });
+                Console.WriteLine("Покупатель удален.");
+            }
+            Console.ReadKey();
+        }
+
+        static void DeleteCountry()
+        {
+            Console.Write("Введите ID страны для удаления: ");
+            int id = int.Parse(Console.ReadLine()!);
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "DELETE FROM Countries WHERE CountryID = @ID";
+                db.Execute(sqlQuery, new { ID = id });
+                Console.WriteLine("Страна удалена.");
+            }
+            Console.ReadKey();
+        }
+
+        static void DeleteCity()
+        {
+            Console.Write("Введите ID города для удаления: ");
+            int id = int.Parse(Console.ReadLine()!);
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "DELETE FROM Cities WHERE CityID = @ID";
+                db.Execute(sqlQuery, new { ID = id });
+                Console.WriteLine("Город удален.");
+            }
+            Console.ReadKey();
+        }
+
+        static void DeleteCategory()
+        {
+            Console.Write("Введите ID раздела для удаления: ");
+            int id = int.Parse(Console.ReadLine()!);
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "DELETE FROM Categories WHERE CategoryID = @ID";
+                db.Execute(sqlQuery, new { ID = id });
+                Console.WriteLine("Раздел удален.");
+            }
+            Console.ReadKey();
+        }
+
+        static void DeletePromotion()
+        {
+            Console.Write("Введите ID акции для удаления: ");
+            int id = int.Parse(Console.ReadLine()!);
+
+            using (IDbConnection db = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "DELETE FROM Promotions WHERE PromotionID = @ID";
+                db.Execute(sqlQuery, new { ID = id });
+                Console.WriteLine("Акция удалена.");
+            }
+            Console.ReadKey();
+        }
+
+        public static void ShowCitiesByCountry()
+        {
+            try
+            {
+                Console.Write("Введите ID страны: ");
+                int countryId = int.Parse(Console.ReadLine()!);
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    string query = "SELECT CityName FROM Cities WHERE CountryID = @CountryID";
+                    var cities = connection.Query<string>(query, new { CountryID = countryId }).ToList();
+
+                    if (cities.Count > 0)
+                    {
+                        Console.WriteLine("Города в выбранной стране:");
+                        foreach (var city in cities)
+                        {
+                            Console.WriteLine(city);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Нет городов для выбранной страны.");
+                    }
+                }
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+        }
+
+        public static void ShowCategoriesByCustomer()
+        {
+            try
+            {
+                Console.Write("Введите ID покупателя: ");
+                int customerId = int.Parse(Console.ReadLine()!);
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    string query = @"
+                    SELECT c.CategoryName
+                    FROM Categories c
+                    INNER JOIN CustomerInterests ci ON c.CategoryID = ci.CategoryID
+                    WHERE ci.CustomerID = @CustomerID";
+                    var categories = connection.Query<string>(query, new { CustomerID = customerId }).ToList();
+
+                    if (categories.Count > 0)
+                    {
+                        Console.WriteLine("Разделы интересов покупателя:");
+                        foreach (var category in categories)
+                        {
+                            Console.WriteLine(category);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Покупатель не имеет интересов в разделах.");
+                    }
+                }
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+        }
+
+        public static void ShowPromotionsByCategory()
+        {
+            try
+            {
+                Console.Write("Введите ID раздела: ");
+                int categoryId = int.Parse(Console.ReadLine()!);
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    string query = @"
+                    SELECT p.Description, p.StartDate, p.EndDate
+                    FROM Promotions p
+                    WHERE p.CategoryID = @CategoryID";
+                    var promotions = connection.Query<(string Description, DateTime StartDate, DateTime EndDate)>(query, new { CategoryID = categoryId }).ToList();
+
+                    if (promotions.Count > 0)
+                    {
+                        Console.WriteLine("Акции для выбранного раздела:"); 
+                        foreach (var promo in promotions)
+                        {
+                            Console.WriteLine($"{promo.Description} (С {promo.StartDate.ToShortDateString()} по {promo.EndDate.ToShortDateString()})");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Нет акций для выбранного раздела.");
+                    }
+                }
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
         }
     }
 }
